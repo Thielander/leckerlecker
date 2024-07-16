@@ -8,6 +8,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "milon/barcode": "^11.0",
         "openfoodfacts/openfoodfacts-laravel": "*"
     },
     "require-dev": {

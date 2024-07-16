@@ -53,7 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-
+    'openai_key' => env('OPENAI_API_KEY', ''),
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

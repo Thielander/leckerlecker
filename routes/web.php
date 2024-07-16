@@ -6,6 +6,6 @@ use App\Http\Controllers\FoodController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/', [FoodController::class, 'index']);
+Route::get('/', [FoodController::class, 'index'])->name('home');
 Route::post('/search', [FoodController::class, 'search'])->name('search');
-Route::post('/nutrition-advice', [FoodController::class, 'getNutritionAdvice'])->name('nutrition.advice');
+Route::post('/getHealthAssessment', [FoodController::class, 'getHealthAssessment'])->name('getHealthAssessment');
