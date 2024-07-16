@@ -4,25 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use OpenFoodFacts\Laravel\Facades\OpenFoodFacts;
+use Milon\Barcode\DNS1D;
 
 class FoodController extends Controller
 {
-    /**
-     * Show the search form.
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
         return view('welcome');
     }
 
-    /**
-     * Handle the search request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\View\View
-     */
     public function search(Request $request)
     {
         $barcode = $request->input('barcode');
@@ -39,43 +29,37 @@ class FoodController extends Controller
             'categories' => $product['categories'] ?? 'N/A',
             'countries' => $product['countries'] ?? 'N/A',
             'image_front_url' => $product['image_front_url'] ?? null,
-            'nutriments' => $product['nutriments'] ?? []
+            'nutriments' => $product['nutriments'] ?? [],
+            'nutriscore_grade' => $product['nutriscore_grade'] ?? [],
+            'barcode' => $barcode
         ];
 
-        // Tagesbedarf Werte
         $dailyValues = [
             'energy_kcal' => 2000,
             'sugars' => 50,
             'salt' => 6
         ];
 
-        // Prozentsätze berechnen
         $percentages = [
             'energy_kcal' => isset($productData['nutriments']['energy-kcal_100g']) ? ($productData['nutriments']['energy-kcal_100g'] / $dailyValues['energy_kcal']) * 100 : 0,
             'sugars' => isset($productData['nutriments']['sugars_100g']) ? ($productData['nutriments']['sugars_100g'] / $dailyValues['sugars']) * 100 : 0,
             'salt' => isset($productData['nutriments']['salt_100g']) ? ($productData['nutriments']['salt_100g'] / $dailyValues['salt']) * 100 : 0,
         ];
 
-        return view('welcome', compact('productData', 'percentages'));
+        return view('search', compact('productData', 'percentages'));
     }
 
     public function getHealthAssessment(Request $request)
     {
         $productData = $request->input('productData');
-        $apiKey = config('app.openai_key');
+
         $prompt = "Bewerten Sie die Gesundheit dieses Lebensmittels basierend auf den folgenden Nährwerten pro 100g: Kalorien: {$productData['nutriments']['energy-kcal_100g']} kcal, Zucker: {$productData['nutriments']['sugars_100g']} g, Salz: {$productData['nutriments']['salt_100g']} g. Sollte man dieses Lebensmittel oft essen oder lieber darauf verzichten?";
+        $apiKey = config('app.openai_key');
         $healthAssessment = $this->queryOpenAI($prompt, $apiKey);
 
         return response()->json(['healthAssessment' => $healthAssessment]);
     }
 
-    /**
-     * Query the OpenAI API for an assessment.
-     *
-     * @param string $prompt
-     * @param string $apiKey
-     * @return string
-     */
     private function queryOpenAI($prompt, $apiKey)
     {
         $apiUrl = "https://api.openai.com/v1/completions";
