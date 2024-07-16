@@ -16,7 +16,6 @@
             <button type="submit" class="btn btn-primary mt-3">Search</button>
         </form>
         @isset($product)
-        dd($product)
             <div class="mt-5">
                 <h2>Product Information</h2>
                 <p><strong>Name:</strong> {{ $product['product_name'] ?? 'N/A' }}</p>

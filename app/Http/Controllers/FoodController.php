@@ -10,7 +10,7 @@ class FoodController extends Controller
     {
         $barcode = $request->input('barcode');
         $product = OpenFoodFacts::barcode($barcode);
-
+        dd($product);
         return view('welcome', compact('product'));
     }
 }
